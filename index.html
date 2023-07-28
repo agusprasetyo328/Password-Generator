@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BuatPaswordAman</title>
+  <link href="https://unpkg.com/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+  .strength-indicator {
+      width: 0%;
+      height: 2px;
+      transition: width 0.3s ease;
+      background-image: linear-gradient(to right, rgba(255, 0, 0, 1), rgba(255, 255, 0, 1), rgba(0, 255, 0, 1));
+      background-size: 300% 100%;
+    }
+  </style>
+</head>
+<body class="bg-gray-200">
+  <div class="container mx-auto px-4 pt-4">
+    <h1 class="text-2xl font-bold">Pembuat Password</h1>
+    <p class="text-gray-600 mb-4">Klik tombol "Buat Password" untuk menghasilkan password acak yang lebih aman.</p>
+    <form>
+      <button type="button" onclick="generatePassword()" class="w-full py-2 px-4 bg-blue-500 text-white rounded-md">Buat Password</button>
+    </form>
+    <div class="mt-4">
+      <input type="text" id="passwordDisplay" class="w-full py-2 px-3 border rounded-md" readonly>
+      <button type="button" onclick="copyPassword()" class="ml-2 py-2 px-4 bg-green-500 text-white rounded-md">Salin</button>
+    </div>
+    <div class="mt-2">
+      <span class="text-sm">Kekuatan Password:</span>
+      <div class="w-48 bg-gray-300 h-2 rounded-md mt-1">
+        <div id="strengthIndicator" class="strength-indicator"></div>
+      </div>
+    </div>
+  </div>
+  <script>
+    function generateRandomPassword(length) {
+      const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+~`|}{[]:;?><,./-=";
+      let password = "";
+      for (let i = 0; i < length; i++) {
+        const randomIndex = Math.floor(Math.random() * charset.length);
+        password += charset.charAt(randomIndex);
+      }
+      return password;
+    }
+
+    function generatePassword() {
+      const generatedPassword = generateRandomPassword(12); // Anda dapat mengatur panjang password di sini
+      document.getElementById("passwordDisplay").value = generatedPassword;
+      updateStrengthIndicator(generatedPassword);
+    }
+
+    function calculatePasswordStrength(password) {
+      const minLength = 8;
+      const maxLength = 13;
+      const length = password.length;
+      const strengthPercentage = (length - minLength) / (maxLength - minLength) * 100;
+      return Math.max(0, Math.min(100, strengthPercentage));
+    }
+
+    function updateStrengthIndicator(password) {
+      const strengthIndicator = document.getElementById("strengthIndicator");
+      const passwordStrength = calculatePasswordStrength(password);
+      strengthIndicator.style.width = `${passwordStrength}%`;
+      strengthIndicator.className = "strength-indicator";
+      if (passwordStrength >= 33 && passwordStrength < 66) {
+        strengthIndicator.classList.add("medium-strength");
+      } else if (passwordStrength >= 66) {
+        strengthIndicator.classList.add("strong-strength");
+      }
+    }
+
+    function copyPassword() {
+      const passwordInput = document.getElementById("passwordDisplay");
+      passwordInput.select();
+      passwordInput.setSelectionRange(0, 99999);
+      document.execCommand("copy");
+    }
+  </script>
+</body>
+</html>
